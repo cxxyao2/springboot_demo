@@ -1,12 +1,15 @@
 package com.jane.springboot_jane.controller;
 
+import com.jane.springboot_jane.pojo.ResponseMessage;
+import com.jane.springboot_jane.pojo.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import com.jane.springboot_jane.dao.User;
+import com.jane.springboot_jane.pojo.User;
 import com.jane.springboot_jane.service.UserService;
 
 @RestController
@@ -17,9 +20,9 @@ public class UserController {
 
     // 创建用户
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseMessage<User> createUser(@Validated @RequestBody UserDto user) {
         User newUser = userService.createUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        return  ResponseMessage.success(newUser);
     }
 
     // 获取所有用户

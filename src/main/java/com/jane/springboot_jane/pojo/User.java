@@ -10,8 +10,10 @@ public class User {
     private Long id;
     private String name;
     private int age;
+    private String email;
     @Column(nullable = true)
     private String personal_privacy;
+
 
     // 无参构造函数
     public User() {}
@@ -23,6 +25,16 @@ public class User {
     }
 
     // Getter 和 Setter 方法
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,10 +1,12 @@
 package com.jane.springboot_jane.service;
 
+import com.jane.springboot_jane.pojo.dto.UserDto;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-import com.jane.springboot_jane.dao.User;
+import com.jane.springboot_jane.pojo.User;
 import com.jane.springboot_jane.repository.UserRepository;
 
 @Service
@@ -13,8 +15,10 @@ public class UserService {
     private UserRepository userRepository;
 
     // 创建用户
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public User createUser(UserDto user) {
+        User newUser = new User();
+        BeanUtils.copyProperties(user, newUser);
+        return userRepository.save(newUser);
     }
 
     // 获取所有用户

@@ -1,16 +1,23 @@
 package com.jane.springboot_jane.pojo.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
+
 public class UserDto {
-    private Long id;
+    @NotBlank(message = "User name cannot be null")
+    @Length(min = 3, max = 100)
     private String name;
     private int age;
+    @Email(message = "email format is invalid.")
+    private String email;
 
-    public Long getId() {
-        return id;
+    public @Email(message = "email format is invalid.") String getEmail() {
+        return email;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setEmail(@Email(message = "email format is invalid.") String email) {
+        this.email = email;
     }
 
     public String getName() {
@@ -32,9 +39,9 @@ public class UserDto {
     @Override
     public String toString() {
         return "UserDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", age=" + age +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
