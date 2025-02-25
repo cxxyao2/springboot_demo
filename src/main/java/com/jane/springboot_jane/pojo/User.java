@@ -1,4 +1,4 @@
-package com.jane.springboot_jane.dao;
+package com.jane.springboot_jane.pojo;
 
 import jakarta.persistence.*;
 
@@ -10,6 +10,8 @@ public class User {
     private Long id;
     private String name;
     private int age;
+    @Column(nullable = true)
+    private String personal_privacy;
 
     // 无参构造函数
     public User() {}
@@ -43,5 +45,13 @@ public class User {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getPersonal_privacy() {
+        return personal_privacy;
+    }
+
+    public void setPersonal_privacy(String personal_privacy) {
+        this.personal_privacy = personal_privacy;
     }
 }
