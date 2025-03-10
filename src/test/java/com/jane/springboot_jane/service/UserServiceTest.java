@@ -1,21 +1,24 @@
 package com.jane.springboot_jane.service;
 
-import com.jane.springboot_jane.dao.User;
+import com.jane.springboot_jane.pojo.User;
+import com.jane.springboot_jane.pojo.dto.UserDto;
 import com.jane.springboot_jane.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.BeanUtils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
     @Mock
@@ -24,71 +27,174 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     public void testCreateUser() {
-        User user = new User();
-        user.setName("Test User");
-        user.setAge(25);
+        // 准备测试数据
+        UserDto userDto = new UserDto();
+        userDto.setName("John Doe");
+        userDto.setAge(30);
+        userDto.setEmail("john.doe@example.com");
 
-        when(userRepository.save(user)).thenReturn(user);
+        User newUser = new User();
+        BeanUtils.copyProperties(userDto, newUser);
+        newUser.setId(1L);
 
-        User createdUser = userService.createUser(user);
-        assertEquals(user.getName(), createdUser.getName());
+        // 模拟 repository 的行为
+        when(userRepository.save(any(User.class))).thenReturn(newUser);
+
+        // 调用服务方法
+        User createdUser = userService.createUser(userDto);
+
+        // 验证结果
+        assertNotNull(createdUser);
+        assertEquals(newUser.getId(), createdUser.getId());
+        assertEquals(newUser.getName(), createdUser.getName());
+        assertEquals(newUser.getAge(), createdUser.getAge());
+        assertEquals(newUser.getEmail(), createdUser.getEmail());
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     public void testGetAllUsers() {
+        // 准备测试数据
+        List<User> userList = new ArrayList<>();
         User user1 = new User();
-        user1.setName("User 1");
-        user1.setAge(20);
-        User user2 = new User();
-        user2.setName("User 2");
-        user2.setAge(22);
+        user1.setId(1L);
+        user1.setName("John Doe");
+        user1.setAge(30);
+        userList.add(user1);
 
-        List<User> users = Arrays.asList(user1, user2);
-        when(userRepository.findAll()).thenReturn(users);
+        // 模拟 repository 的行为
+        when(userRepository.findAll()).thenReturn(userList);
 
+        // 调用服务方法
         List<User> result = userService.getAllUsers();
-        assertEquals(2, result.size());
+
+        // 验证结果
+        assertNotNull(result);
+        assertEquals(userList.size(), result.size());
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).findAll();
     }
 
     @Test
     public void testGetUserById() {
+        // 准备测试数据
+        Long userId = 1L;
         User user = new User();
-        user.setId(1L);
-        user.setName("Test User");
-        user.setAge(25);
+        user.setId(userId);
+        user.setName("John Doe");
+        user.setAge(30);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        // 模拟 repository 的行为
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        User foundUser = userService.getUserById(1L);
-        assertNotNull(foundUser);
-        assertEquals(user.getName(), foundUser.getName());
+        // 调用服务方法
+        User result = userService.getUserById(userId);
+
+        // 验证结果
+        assertNotNull(result);
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getName(), result.getName());
+        assertEquals(user.getAge(), result.getAge());
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).findById(userId);
+    }
+
+    @Test
+    public void testGetUserByIdNotFound() {
+        // 准备测试数据
+        Long userId = 1L;
+
+        // 模拟 repository 的行为
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // 调用服务方法
+        User result = userService.getUserById(userId);
+
+        // 验证结果
+        assertNull(result);
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).findById(userId);
     }
 
     @Test
     public void testUpdateUser() {
+        // 准备测试数据
+        Long userId = 1L;
         User existingUser = new User();
-        existingUser.setId(1L);
+        existingUser.setId(userId);
         existingUser.setName("Old Name");
         existingUser.setAge(25);
 
         User updatedUserDetails = new User();
         updatedUserDetails.setName("New Name");
-        updatedUserDetails.setAge(26);
+        updatedUserDetails.setAge(30);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(existingUser)).thenReturn(existingUser);
+        User updatedUser = new User();
+        updatedUser.setId(userId);
+        updatedUser.setName("New Name");
+        updatedUser.setAge(30);
 
-        User result = userService.updateUser(1L, updatedUserDetails);
-        assertEquals("New Name", result.getName());
-        assertEquals(26, result.getAge());
+        // 模拟 repository 的行为
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(updatedUser);
+
+        // 调用服务方法
+        User result = userService.updateUser(userId, updatedUserDetails);
+
+        // 验证结果
+        assertNotNull(result);
+        assertEquals(updatedUser.getId(), result.getId());
+        assertEquals(updatedUser.getName(), result.getName());
+        assertEquals(updatedUser.getAge(), result.getAge());
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void testUpdateUserNotFound() {
+        // 准备测试数据
+        Long userId = 1L;
+        User updatedUserDetails = new User();
+        updatedUserDetails.setName("New Name");
+        updatedUserDetails.setAge(30);
+
+        // 模拟 repository 的行为
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // 调用服务方法
+        User result = userService.updateUser(userId, updatedUserDetails);
+
+        // 验证结果
+        assertNull(result);
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
     public void testDeleteUser() {
-        doNothing().when(userRepository).deleteById(1L);
-        userService.deleteUser(1L);
-        verify(userRepository, times(1)).deleteById(1L);
+        // 准备测试数据
+        Long userId = 1L;
+
+        // 调用服务方法
+        userService.deleteUser(userId);
+
+        // 验证 repository 方法是否被调用
+        verify(userRepository, times(1)).deleteById(userId);
     }
 }

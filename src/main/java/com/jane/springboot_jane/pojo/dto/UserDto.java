@@ -8,11 +8,14 @@ public class UserDto {
     @NotBlank(message = "User name cannot be null")
     @Length(min = 3, max = 100)
     private String name;
+
     private int age;
+
     @Email(message = "email format is invalid.")
     private String email;
 
-    public @Email(message = "email format is invalid.") String getEmail() {
+    public @Email(message = "email format is invalid.")
+    String getEmail() {
         return email;
     }
 

@@ -1,6 +1,6 @@
 package com.jane.springboot_jane.repository;
 
-import com.jane.springboot_jane.dao.User;
+import com.jane.springboot_jane.pojo.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -20,6 +20,7 @@ public class UserRepositoryTest {
         User user = new User();
         user.setName("Test User");
         user.setAge(25);
+        user.setEmail("tom@gmail.com");
 
         User savedUser = userRepository.save(user);
         assertNotNull(savedUser.getId());
@@ -30,6 +31,7 @@ public class UserRepositoryTest {
         User user = new User();
         user.setName("Test User");
         user.setAge(25);
+        user.setEmail("tom@gmail.com");
         User savedUser = userRepository.save(user);
 
         Optional<User> foundUser = userRepository.findById(savedUser.getId());
@@ -42,6 +44,8 @@ public class UserRepositoryTest {
         User user = new User();
         user.setName("Test User");
         user.setAge(25);
+        user.setAge(25);
+        user.setEmail("tom@gmail.com");
         User savedUser = userRepository.save(user);
 
         userRepository.deleteById(savedUser.getId());

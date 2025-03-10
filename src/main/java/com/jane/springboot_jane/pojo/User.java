@@ -11,6 +11,7 @@ public class User {
     private String name;
     private int age;
     private String email;
+
     @Column(nullable = true)
     private String personal_privacy;
 
