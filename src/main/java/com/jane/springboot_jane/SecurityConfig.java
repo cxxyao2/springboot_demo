@@ -7,6 +7,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -17,12 +21,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request ->  request.anyRequest().authenticated() )
+                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
-
 
 
 //        http.csrf(customizer -> customizer.disable());
@@ -43,6 +46,24 @@ public class SecurityConfig {
 //        return http.build();
     }
 
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails user1 = User
+                .withDefaultPasswordEncoder()
+                .username("jane1")
+                .password("123")
+                .roles("USERS")
+                .build();
 
+        UserDetails user2 = User
+                .withDefaultPasswordEncoder()
+                .username("jane2")
+                .password("123")
+                .roles("USERS")
+                .build();
+
+
+        return new InMemoryUserDetailsManager(user1, user2);
+    }
 
 }
