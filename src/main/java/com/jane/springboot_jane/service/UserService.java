@@ -3,6 +3,7 @@ package com.jane.springboot_jane.service;
 import com.jane.springboot_jane.pojo.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import com.jane.springboot_jane.repository.UserRepository;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(12);
 
     // 创建用户
     public User createUser(UserDto user) {
@@ -37,6 +40,8 @@ public class UserService {
         if (user != null) {
             user.setName(userDetails.getName());
             user.setAge(userDetails.getAge());
+            // if has password
+            // user.setPassword(encoder.encode(user.getPassword))
             return userRepository.save(user);
         }
         return null;
